@@ -146,7 +146,6 @@ if __name__ == '__main__':
     drawPlot(metrics, fname, ["loss","rmse","mae"]) 
 
     # 对测试集上的结果进行线性组合
-    print("开始对测试集上的结果进行线性组合！")
     # print(test_Y.shape)
     weights = [0.4, 0.35, 0.25]
     net_y_hat = np.array(net_y_hat).squeeze()
