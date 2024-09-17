@@ -50,6 +50,3 @@ class CNN(nn.Module):
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
-
-if __name__ == '__main__':
-    print(data_Y.head())

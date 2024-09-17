@@ -27,7 +27,6 @@ def denormalize(x):
     '''    
     # 如果输入是 list，则先将其转换为 PyTorch 的 Tensor
     # 检查输入的形状
-    # print(f"Input shape before denormalize: {np.array(x).shape if isinstance(x, list) else x.shape}")
     if isinstance(x, list):
         x = torch.tensor(x)
 
@@ -77,19 +76,16 @@ def net_test(model, testX, testY, loss_fn):
             batch_count += 1
             y_hats.append(y_hat.detach().cpu().numpy())
             y_trues.append(y_true.detach().cpu().numpy())
-            # print(len(y_hat),len(y_true))
         y_hats = np.concatenate(y_hats) # 沿着维度0，也就是batch_size的维度拼接
         y_trues = np.concatenate(y_trues)
     y_trues = y_trues.reshape(-1,1)
-    # print(y_hats.shape,y_trues.shape)
     y_hats = denormalize(y_hats)
     y_trues = denormalize(y_trues)
-    # print(y_hats.shape,y_trues.shape)
     rmse_score,mae_score = math.sqrt(mse(y_trues, y_hats)), mae(y_trues, y_hats)   
     return (y_hats, rmse_score, mae_score, test_l_sum / batch_count)
 
 if __name__ == '__main__':
-    train_X, train_Y, test_X, test_Y = MyDataset().loading('/data2/NieShiqin/learn_code/sell/concrete.csv')
+    train_X, train_Y, test_X, test_Y = MyDataset().loading('concrete.csv')
     print("数据集加载完毕！")
     
     # 模型定义
@@ -146,14 +142,10 @@ if __name__ == '__main__':
     drawPlot(metrics, fname, ["loss","rmse","mae"]) 
 
     # 对测试集上的结果进行线性组合
-    # print(test_Y.shape)
     weights = [0.4, 0.35, 0.25]
     net_y_hat = np.array(net_y_hat).squeeze()
     xgb_test_predict = xgb_model.predict(test_X)
     rf_test_predict = rf_model.predict(test_X)
-    # xgb_test_predict = xgb_test_predict.reshape(-1,1)
-    # rf_test_predict = rf_test_predict.reshape(-1,1)
-    # print(net_y_hat.shape, xgb_test_predict.shape, rf_test_predict.shape)
     final_predict = xgb_test_predict * weights[0] + rf_test_predict * weights[1] + net_y_hat * weights[2]
 
     # 计算测试集上的误差
